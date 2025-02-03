@@ -44,12 +44,13 @@ class RPMInfo(object):
 
     _new_coder = struct.Struct(b"8s8s8s8s8s8s8s8s8s8s8s8s8s")
 
-    def __init__(self, name, file_start, file_size, initial_offset, isdir):
+    def __init__(self, name, file_start, file_size, initial_offset, isdir, mode):
         self.name = name
         self.file_start = file_start
         self.size = file_size
         self.initial_offset = initial_offset
         self._isdir = isdir
+        self.mode = mode
 
     @property
     def isdir(self):
@@ -82,7 +83,9 @@ class RPMInfo(object):
         # https://www.mankier.com/5/cpio under Old Binary Format mode bits
         mode = int(d[1], 16)
         isdir = mode & int("0040000", 8)
-        return cls(name, file_start, file_size, initial_offset, isdir)
+        return cls(
+            name, file_start, file_size, initial_offset, isdir, mode & int("777", 8)
+        )
 
 
 class RPMFile(object):
@@ -172,7 +175,7 @@ class RPMFile(object):
         """
         if not isinstance(member, RPMInfo):
             member = self.getmember(member)
-        return _SubFile(self.data_file, member.file_start, member.size)
+        return _SubFile(self.data_file, member.file_start, member.size, member.mode)
 
     _data_file = None
 

@@ -127,6 +127,7 @@ def main(*argv):
                         outfile.write(rpmfileobj.read())
                     finally:
                         outfile.close()
+                        os.chmod(target, rpmfileobj.mode)
                     if args.verbose:
                         print(target)
                     output["extracted"].append(rpminfo.name.split("/"))

@@ -28,7 +28,7 @@ class _SubFile(object):
     object.
     """
 
-    def __init__(self, fileobj, start=0, size=None):
+    def __init__(self, fileobj, start=0, size=None, mode=None):
         self._fileobj = fileobj
         self._start = start
         if size is None:
@@ -37,6 +37,7 @@ class _SubFile(object):
             self._size = pos - start
         else:
             self._size = size
+        self._mode = mode
         self._pos = 0
 
     def __enter__(self):
@@ -97,3 +98,7 @@ class _SubFile(object):
             yield line
             line = self.readline(n)
             n -= len(line)
+
+    @property
+    def mode(self):
+        return self._mode
